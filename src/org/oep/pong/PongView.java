@@ -104,6 +104,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** Flags indicating who is a player */
 	private boolean mRedPlayer = false, mBluePlayer = false;
 
+	private Starfield mStarfield = null;
+	
 	/**
 	 * An overloaded class that repaints this view in a separate thread.
 	 * Calling PongView.update() should initiate the thread.
@@ -435,6 +437,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     private void initializePongView() {
     	initializePause();
     	initializePaddles();
+    	initializeStarfield();
     }
     
     private void initializePause() {
@@ -462,6 +465,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	
     	mRed.setLives(STARTING_LIVES + mLivesModifier);
     	mBlue.setLives(STARTING_LIVES + mLivesModifier);
+    }
+    
+    private void initializeStarfield() {
+    	mStarfield = new Starfield(getWidth(), getHeight());	
     }
     
     /**
@@ -522,6 +529,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
     	Context context = getContext();
     	
+    	// Draw starfield
+    	mStarfield.draw(canvas);
+    	
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);
     	mBlue.draw(canvas);
@@ -535,7 +545,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.MAGENTA);
         
         mBall.draw(canvas);
         
@@ -971,11 +981,80 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
-		public static final float SPEED = 4.0f; 
+		public static final float SPEED = 6.0f; 
 		public static final int RADIUS = 4;
 		public static final double SALT = 4 * Math.PI / 9;
 	}
 
+	class Star {
+		public int x = 0;
+		public int y = 0;
+		public int diameter = 0;
+		public int speed = 0;
+		public int color = 0;
+		
+		public Star () {}
+		
+		public Star(int x, int y, int diameter, int speed, int color) {
+			this.x = x;
+			this.y = y;
+			this.diameter = diameter;
+			this.speed = speed;
+			this.color = color;
+		}
+	}
+
+	class Starfield {
+		private int width = 0;
+		private int height = 0;
+		private int numStars = 128;
+		private int maxSpeed = 3;
+		private Star[] starArray = new Star[numStars];
+		private Random r = new Random(); 
+		
+		public Starfield(int w, int h) {
+			height = h;
+			width = w;
+			
+			for (int i=0; i<numStars; i++) {
+				resetStar(starArray[i] = new Star());
+				starArray[i].y = r.nextInt(height); // resetStar() sets y = 0
+				
+			}
+		}
+		
+		private int calculateColor(int speed) {
+			switch(speed) {
+				case 0: return Color.RED; // should never happen
+				case 1: return Color.DKGRAY;
+				case 2: return Color.GRAY;
+				case 3: return Color.LTGRAY;
+				default: return Color.WHITE;
+			}
+		}
+		
+		private void resetStar(Star star) {	
+			star.y = 0;
+			star.x = r.nextInt(width);
+			star.speed = r.nextInt(maxSpeed)+1;
+			star.diameter = star.speed;
+			star.color = calculateColor(star.speed);
+		}
+		
+		private void moveStar(Star star) {
+			star.y = star.y + star.speed * 4;
+			if (star.y > height) resetStar(star);
+		}
+		
+		public void draw(Canvas canvas) {
+			for (int i=0; i<numStars; i++) {
+				moveStar(starArray[i]);
+				mPaint.setColor(starArray[i].color);
+				canvas.drawCircle(starArray[i].x, starArray[i].y, starArray[i].diameter, mPaint);
+			}
+		}
+	}
+	
 	class Paddle {
 		protected int mColor;
 		protected Rect mRect;
