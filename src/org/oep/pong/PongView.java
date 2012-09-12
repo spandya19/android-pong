@@ -989,16 +989,16 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	class Star {
 		public int x = 0;
 		public int y = 0;
-		public int diameter = 0;
+		public int radius = 0;
 		public int speed = 0;
 		public int color = 0;
 		
 		public Star () {}
 		
-		public Star(int x, int y, int diameter, int speed, int color) {
+		public Star(int x, int y, int radius, int speed, int color) {
 			this.x = x;
 			this.y = y;
-			this.diameter = diameter;
+			this.radius = radius;
 			this.speed = speed;
 			this.color = color;
 		}
@@ -1037,7 +1037,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			star.y = 0;
 			star.x = r.nextInt(width);
 			star.speed = r.nextInt(maxSpeed)+1;
-			star.diameter = star.speed;
+			star.radius = star.speed;
 			star.color = calculateColor(star.speed);
 		}
 		
@@ -1050,7 +1050,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			for (int i=0; i<numStars; i++) {
 				moveStar(starArray[i]);
 				mPaint.setColor(starArray[i].color);
-				canvas.drawCircle(starArray[i].x, starArray[i].y, starArray[i].diameter, mPaint);
+				canvas.drawCircle(starArray[i].x, starArray[i].y, starArray[i].radius, mPaint);
 			}
 		}
 	}
