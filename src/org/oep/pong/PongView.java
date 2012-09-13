@@ -62,6 +62,11 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** CPU handicap */
 	private int mCpuHandicap;
 	
+/** Snow Object*/
+	
+	private Snowy mSnowy = null;
+
+	
 	/** Starts a new round when set to true */
 	private boolean mNewRound = true;
 	
@@ -111,7 +116,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	 *
 	 */
 	class RefreshHandler extends Handler {
-		@Override
+		//@Override
 		public void handleMessage(Message msg) {
 			PongView.this.update();
 			PongView.this.invalidate(); // Mark the view as 'dirty'
@@ -435,6 +440,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     private void initializePongView() {
     	initializePause();
     	initializePaddles();
+    	initializeSnowy();
     }
     
     private void initializePause() {
@@ -474,6 +480,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	mBall.randomAngle();
     	mBall.pause();
     }
+    
+    private void initializeSnowy() {
+    	mSnowy = new Snowy(getWidth(), getHeight());	
+    }
+
+    
     
     protected float bound(float x, float low, float hi) {
     	return Math.max(low, Math.min(x, hi));
@@ -525,6 +537,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);
     	mBlue.draw(canvas);
+    	mSnowy.draw(canvas);
+
 
     	// Draw touchboxes if needed
     	if(gameRunning() && mRed.player && mCurrentState == State.Running)
@@ -535,7 +549,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.YELLOW);
         
         mBall.draw(canvas);
         
@@ -971,10 +985,71 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
-		public static final float SPEED = 4.0f; 
-		public static final int RADIUS = 4;
+		public static final float SPEED = 12.0f; 
+		public static final int RADIUS = 10;
 		public static final double SALT = 4 * Math.PI / 9;
 	}
+	
+	class Snowy {
+		private int width = 0;
+		private int height = 0;
+		private int nSnow = 500;
+		private int maxSpeed = 2;
+		private Snow[] snowArray = new Snow[nSnow];
+		private Random r = new Random(); 
+		
+		
+		public class Snow {
+			public int x = 0;
+			public int y = 0;
+			public int radius = 0;
+			public int speed = 0;
+			public int color = 0;
+		}
+
+		public Snowy(int w, int h) {
+			height = h;
+			width = w;
+			for (int i=0; i<nSnow; i++) {
+				resetSnow(snowArray[i] = new Snow());
+				snowArray[i].y = r.nextInt(height);
+			}
+		}
+
+		/* Reset the Snow flakes*/
+
+		private void resetSnow(Snow snow) {	
+			snow.y = 0;
+			snow.x = r.nextInt(width);
+			snow.speed = r.nextInt(maxSpeed)*2;
+			snow.radius = 2;
+			snow.color= Color.WHITE ;
+			}
+		
+		/* Moves the Snow Flakes*/
+
+		private void moveSnow(Snow snow) {
+			snow.y = snow.y + snow.speed * 2;
+			if (snow.y > height) resetSnow(snow);
+		}
+
+		/*Draws the Snow Flakes*/
+		public void draw(Canvas canvas) {
+			for (int i=0; i<nSnow; i++) {
+				moveSnow(snowArray[i]);
+				mPaint.setColor(snowArray[i].color);
+				canvas.drawPoint(snowArray[i].x, snowArray[i].y, mPaint);
+			}
+		}
+	}
+
+	
+	
+	
+	
+	
+	
+	
 
 	class Paddle {
 		protected int mColor;
