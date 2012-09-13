@@ -37,7 +37,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	public static final int
 		STARTING_LIVES = 1,
-		PLAYER_PADDLE_SPEED = 10;
+		PLAYER_PADDLE_SPEED = 15;
 	
 	/**
 	 * This is mostly deprecated but kept around if the need
@@ -163,7 +163,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	Context ctx = getContext();
     	Resources r = ctx.getResources();
     	
-    	mBallSpeedModifier = Math.max(0, prefs.getInt(Pong.PREF_BALL_SPEED, 0));
+    	mBallSpeedModifier = Math.max(13, prefs.getInt(Pong.PREF_BALL_SPEED, 0));
     	mMuted = prefs.getBoolean(Pong.PREF_MUTED, mMuted);
     	mLivesModifier = Math.max(0, prefs.getInt(Pong.PREF_LIVES, 2));
     	mCpuHandicap = Math.max(0, Math.min(PLAYER_PADDLE_SPEED-1, prefs.getInt(Pong.PREF_HANDICAP, 4)));
@@ -513,6 +513,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
      * Paints the game!
      */
     @Override
+    
+    
+    
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
@@ -595,7 +598,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Announce the winner!
         if(!gameRunning()) {
-        	mPaint.setColor(Color.GREEN);
+        	mPaint.setColor(Color.RED);
         	String s = "You both lose";
         	
         	if(!mBlue.living()) {
@@ -1105,12 +1108,13 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		public boolean collides(Ball b) {
 			return b.x >= mRect.left && b.x <= mRect.right && 
 			b.y >= mRect.top - Ball.RADIUS && b.y <= mRect.bottom + Ball.RADIUS;
+			
 		}
 		
 		/** Thickness of the paddle */
 		private static final int PADDLE_THICKNESS = 10;
 		
 		/** Width of the paddle */
-		private static final int PADDLE_WIDTH = 40;
+		private static final int PADDLE_WIDTH = 20;
 	}
 }
