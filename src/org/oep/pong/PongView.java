@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -795,9 +796,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		public float x, y, xp, yp, vx, vy;
 		public float speed = SPEED;
 		
+		
 		protected double mAngle;
 		protected boolean mNextPointKnown = false;
 		protected int mCounter = 0;
+		
+		
 		
 		public Ball() {
 			findVector();
@@ -899,6 +903,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			
 			angle %= (2 * Math.PI);
 			angle = salt(angle, p);
+			this.speed = applyCenterHitBonus(p);
 //			normalize(p);
 			setAngle(angle);
 		}
@@ -970,6 +975,19 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			return Math.max(BOUND, Math.min(Math.PI - BOUND, angle));
 		}
 		
+		protected float applyCenterHitBonus(Paddle paddle){
+			int cx = paddle.centerX();
+			float newSpeed;
+			float centerBonusIndicator = Math.abs(cx-this.x);
+			if(centerBonusIndicator <= CENTER_HIT_CONSTANT){
+			   newSpeed = this.speed * 2;
+			}
+			else {
+				newSpeed = this.speed;				
+			}
+			return newSpeed;
+		}
+		
 
 		/**
 		 * Given it a coordinate, it transforms it into a proper x-coordinate for the ball.
@@ -981,7 +999,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
-		public static final float SPEED = 6.0f; 
+		public static final float SPEED = 4.0f;
+		public static final float CENTER_HIT_CONSTANT = 6f;
 		public static final int RADIUS = 4;
 		public static final double SALT = 4 * Math.PI / 9;
 	}
