@@ -17,7 +17,7 @@ public class Pong extends Activity {
 		setListeners();
 	}
 	
-	@Override
+	// @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.game_menu, menu);
@@ -38,7 +38,7 @@ public class Pong extends Activity {
 	protected void setListeners () {
 		this.findViewById(R.id.title_btnNoPlayer)
 		.setOnClickListener(new OnClickListener() {
-			@Override
+			// @Override
 			public void onClick(View v) {
 				startGame(false,false);
 			}
@@ -46,7 +46,7 @@ public class Pong extends Activity {
 		
 		this.findViewById(R.id.title_btnOnePlayer)
 		.setOnClickListener(new OnClickListener() {
-			@Override
+			//@Override
 			public void onClick(View v) {
 				startGame(false,true);
 			}
@@ -54,7 +54,7 @@ public class Pong extends Activity {
 		
 		this.findViewById(R.id.title_btnTwoPlayer)
 		.setOnClickListener(new OnClickListener() {
-			@Override
+			//@Override
 			public void onClick(View v) {
 				startGame(true,true);
 			}

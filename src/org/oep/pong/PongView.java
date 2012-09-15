@@ -284,9 +284,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		if(ty < paddle.getBottom() && pty > paddle.getBottom()
 				&& xc > paddle.getLeft() && xc < paddle.getRight()) {
 			
-			mBall.x = xc;
+			mBall.x = xc;	
 			mBall.y = paddle.getBottom() + Ball.RADIUS;
 			mBall.bouncePaddle(paddle);
+			mBall.randomColor();
 			playSound(mPaddleSFX);
 			increaseDifficulty();
 		}
@@ -308,6 +309,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			mBall.x = xc;
 			mBall.y = paddle.getTop() - Ball.RADIUS;
 			mBall.bouncePaddle(paddle);
+			mBall.randomColor();
 			playSound(mPaddleSFX);
 			increaseDifficulty();
 		}
@@ -534,8 +536,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         	mBlue.drawTouchbox(canvas);
         
         // Draw ball stuff
-        mPaint.setStyle(Style.FILL);
-        mPaint.setColor(Color.WHITE);
+     //  mPaint.setStyle(Style.FILL);
+       // mPaint.setColor(Color.WHITE);
         
         mBall.draw(canvas);
         
@@ -784,7 +786,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	class Ball {
 		public float x, y, xp, yp, vx, vy;
 		public float speed = SPEED;
-		
+		public int color = Color.GREEN;
+		public int colors[] = {Color.BLUE,Color.GREEN,Color.RED,Color.YELLOW, Color.LTGRAY};
+		private Random r= new Random(); 
 		protected double mAngle;
 		protected boolean mNextPointKnown = false;
 		protected int mCounter = 0;
@@ -846,6 +850,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 				mCounter--;
 			}
 		}
+		// Added random color method 
+		public void randomColor()  
+		{
+			color = colors[r.nextInt(colors.length)];
+		}
+		
 		
 		public void randomAngle() {
 			setAngle( Math.PI / 2 + RNG.nextInt(2) * Math.PI + Math.PI / 2 * RNG.nextGaussian() );
@@ -859,7 +869,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		
 		public void draw(Canvas canvas) {
 	        if((mCounter / 10) % 2 == 1 || mCounter == 0)
-	        	canvas.drawCircle(x, y, Ball.RADIUS, mPaint);
+	        {
+	        	mPaint.setStyle(Style.FILL);
+	        	mPaint.setColor(color);
+	        		        	canvas.drawCircle(x, y, Ball.RADIUS, mPaint);
+	        }
+	        	
 		}
 		
 		/**
