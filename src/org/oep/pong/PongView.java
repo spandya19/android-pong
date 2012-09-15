@@ -70,7 +70,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	/** Mutes sounds when true */
 	private boolean mMuted = false;
-
+	
+	
 	private Paddle mRed, mBlue;
 	
 	/** Touch boxes for various functions. These are assigned in initialize() */
@@ -96,7 +97,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	private static final int PADDING = 3;
 	
 	/** Scrollwheel sensitivity */
-	private static final int SCROLL_SENSITIVITY = 80;
+	private static final int SCROLL_SENSITIVITY = 100;
 
 	/** Redraws the screen according to FPS */
 	private RefreshHandler mRedrawHandler = new RefreshHandler();
@@ -536,6 +537,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
         mPaint.setColor(Color.WHITE);
+       
         
         mBall.draw(canvas);
         
@@ -547,6 +549,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         	
         	if(!mRed.player) {
         		mPaint.setColor(Color.RED);
+        		mPaint.setTextSize(18);
         		canvas.drawText(join, getWidth() / 2 - joinw / 2, mRed.touchCenterY(), mPaint);
         	}
         	
@@ -561,10 +564,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         	String pause = context.getString(R.string.pause);
         	int pausew = (int) mPaint.measureText(pause);
         
-        	mPaint.setColor(Color.GREEN);
+        	mPaint.setColor(Color.WHITE);
         	mPaint.setStyle(Style.STROKE);
         	canvas.drawRect(mPauseTouchBox, mPaint);
-        	canvas.drawText(pause, getWidth() / 2 - pausew / 2, getHeight() / 2, mPaint);
+        	canvas.drawText(pause, getWidth() / 2 - pausew / 2, getHeight() / 3, mPaint);
         }
 
     	// Paint a PAUSED message
@@ -572,13 +575,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         	String s = context.getString(R.string.paused);
         	int width = (int) mPaint.measureText(s);
         	int height = (int) (mPaint.ascent() + mPaint.descent()); 
-        	mPaint.setColor(Color.WHITE);
-        	canvas.drawText(s, getWidth() / 2 - width / 2, getHeight() / 2 - height / 2, mPaint);
+        	mPaint.setColor(Color.BLACK);
+        	mPaint.setStyle(Style.FILL);
+        	canvas.drawText(s, getWidth() / 2 - width / 2, getHeight() / 3 - height / 2, mPaint);
         }
         
         // Draw a 'lives' counter
     	mPaint.setColor(Color.WHITE);
-    	mPaint.setStyle(Style.FILL_AND_STROKE);
+    	mPaint.setStyle(Style.FILL);
     	for(int i = 0; i < mRed.getLives(); i++) {
     		canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
     				PADDING + Ball.RADIUS,
@@ -601,10 +605,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         	if(!mBlue.living()) {
         		s = context.getString(R.string.red_wins);
         		mPaint.setColor(Color.RED);
+        		mPaint.setTextSize(18);
+        		mPaint.setStyle(Style.FILL);
         	}
         	else if(!mRed.living()) {
         		s = context.getString(R.string.blue_wins);
         		mPaint.setColor(Color.BLUE);
+        		mPaint.setTextSize(18);
+        		mPaint.setStyle(Style.FILL);
         	}
         	
         	int width = (int) mPaint.measureText(s);
@@ -971,8 +979,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
-		public static final float SPEED = 4.0f; 
-		public static final int RADIUS = 4;
+		
+		//Change the ball speed from 4.0f to 10.0f
+		public static final float SPEED = 10.0f; 
+		public static final int RADIUS = 7;
 		public static final double SALT = 4 * Math.PI / 9;
 	}
 
@@ -1108,9 +1118,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		/** Thickness of the paddle */
-		private static final int PADDLE_THICKNESS = 10;
+		private static final int PADDLE_THICKNESS = 15;
 		
 		/** Width of the paddle */
-		private static final int PADDLE_WIDTH = 40;
+		private static final int PADDLE_WIDTH = 30;
 	}
 }
