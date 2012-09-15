@@ -71,7 +71,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** Mutes sounds when true */
 	private boolean mMuted = false;
 
-	private Paddle mRed, mBlue;
+	private Paddle mRed, mBlue, mGreen, mYellow, mCyan, mOrange;
 	
 	/** Touch boxes for various functions. These are assigned in initialize() */
 	private Rect mPauseTouchBox;
@@ -258,6 +258,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	protected void handleBounces(float px, float py) {
 		handleTopFastBounce(mRed, px, py);
 		handleBottomFastBounce(mBlue, px, py);
+		handleTopFastBounce(mGreen, px, py);
+		handleBottomFastBounce(mGreen, px, py);
+		handleTopFastBounce(mYellow, px, py);
+		handleBottomFastBounce(mYellow, px, py);
+		handleTopFastBounce(mOrange, px, py);
+		handleBottomFastBounce(mOrange, px, py);
+		handleTopFastBounce(mCyan, px, py);
+		handleBottomFastBounce(mCyan, px, py);
 		
 		// Handle bouncing off of a wall
 		if(mBall.x <= Ball.RADIUS || mBall.x >= getWidth() - Ball.RADIUS) {
@@ -445,20 +453,43 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     }
     
     private void initializePaddles() {
+    	//Order from top to bottom; Red, Green, Orange, Cyan, Yellow, Blue
+    	
     	Rect redTouch = new Rect(0,0,getWidth(),getHeight() / 8);
     	Rect blueTouch = new Rect(0, 7 * getHeight() / 8, getWidth(), getHeight());
+    	Rect greenTouch = new Rect(0, 4 * getHeight() / 16, getWidth(), (getHeight() / 16) * 5);
+    	Rect orangeTouch = new Rect(0, 6 * getHeight() / 16, getWidth(), (getHeight() / 16) * 7); 
+    	Rect yellowTouch = new Rect(0, 11 * getHeight() / 16, getWidth(), (getHeight() / 4) * 3);
+    	Rect cyanTouch = new Rect(0, 9 * getHeight() / 16, getWidth(), (getHeight() / 16) * 10);
     	
     	mRed = new Paddle(Color.RED, redTouch.bottom + PADDING);
     	mBlue = new Paddle(Color.BLUE, blueTouch.top - PADDING - Paddle.PADDLE_THICKNESS);
+    	mGreen = new Paddle(Color.GREEN, greenTouch.centerY() + PADDING);
+    	mYellow = new Paddle(Color.YELLOW, yellowTouch.centerY() + PADDING);
+    	mOrange = new Paddle(Color.rgb(255, 128, 0), orangeTouch.centerY() + PADDING);
+    	mCyan = new Paddle(Color.rgb(0, 255, 255), cyanTouch.centerY() + PADDING);
     	
     	mRed.setTouchbox( redTouch );
     	mBlue.setTouchbox( blueTouch );
+    	mGreen.setTouchbox( greenTouch );
+    	mYellow.setTouchbox( yellowTouch );
+    	mOrange.setTouchbox( orangeTouch );
+    	mCyan.setTouchbox( cyanTouch );
     	
     	mRed.setHandicap(mCpuHandicap);
     	mBlue.setHandicap(mCpuHandicap);
+    	mGreen.setHandicap(mCpuHandicap);
+    	mYellow.setHandicap(mCpuHandicap);
+    	mOrange.setHandicap(mCpuHandicap);
+    	mCyan.setHandicap(mCpuHandicap);
     	
     	mRed.player = mRedPlayer;
     	mBlue.player = mBluePlayer;
+    	
+    	mRed.setSlave(mOrange);
+    	mBlue.setSlave(mCyan);
+    	mOrange.setSlave(mYellow);
+    	mCyan.setSlave(mGreen);
     	
     	mRed.setLives(STARTING_LIVES + mLivesModifier);
     	mBlue.setLives(STARTING_LIVES + mLivesModifier);
@@ -525,6 +556,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);
     	mBlue.draw(canvas);
+    	mGreen.draw(canvas);
+    	mYellow.draw(canvas);
+    	mOrange.draw(canvas);
+    	mCyan.draw(canvas);
 
     	// Draw touchboxes if needed
     	if(gameRunning() && mRed.player && mCurrentState == State.Running)
@@ -595,7 +630,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Announce the winner!
         if(!gameRunning()) {
-        	mPaint.setColor(Color.GREEN);
+        	mPaint.setColor(Color.MAGENTA);
         	String s = "You both lose";
         	
         	if(!mBlue.living()) {
@@ -634,9 +669,13 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			// was in the lower quartile of the screen.
 			if(mBlue.player && mBlue.inTouchbox(tx,ty)) {
 				mBlue.destination = tx;
+				mGreen.destination = tx;
+				mCyan.destination = tx;
 			}
 			else if(mRed.player && mRed.inTouchbox(tx,ty)) {
 				mRed.destination = tx;
+				mYellow.destination = tx;
+				mOrange.destination = tx;
 			}
 			else if(mo.getAction() == MotionEvent.ACTION_DOWN && mPauseTouchBox.contains(tx, ty)) {
 				if(mCurrentState != State.Stopped) {
@@ -697,8 +736,16 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		int mid = getWidth() / 2;
 		mRed.setPosition(mid);
 		mBlue.setPosition(mid);
+		mGreen.setPosition(mid);
+		mYellow.setPosition(mid);
+		mCyan.setPosition(mid);
+		mOrange.setPosition(mid);
 		mRed.destination = mid;
 		mBlue.destination = mid;
+		mGreen.destination = mid;
+		mYellow.destination = mid;
+		mCyan.destination = mid;
+		mOrange.destination = mid;
 		mRed.setLives(STARTING_LIVES);
 		mBlue.setLives(STARTING_LIVES);
 	}
@@ -983,6 +1030,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		protected int mHandicap = 0;
 		protected int mSpeed = PLAYER_PADDLE_SPEED;
 		protected int mLives = STARTING_LIVES;
+		protected Paddle mSlavePaddle;
 		
 		public boolean player = false;
 
@@ -997,6 +1045,18 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			destination = mid;
 		}
 		
+		
+		//This is how the second paddle is controlled by the first.
+		public void setSlave(Paddle p)
+		{
+			this.mSlavePaddle = p;
+		}
+		
+		public Paddle getSlave()
+		{
+			return mSlavePaddle;
+		}
+		
 		public void move() {
 			move(mSpeed);
 		}
@@ -1008,14 +1068,34 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		public void move(int s) {
 			int dx = (int) Math.abs(mRect.centerX() - destination);
 			
-			if(destination < mRect.centerX()) {
-				mRect.offset( (dx > s) ? -s : -dx, 0);
-			}
-			else if(destination > mRect.centerX()) {
-				mRect.offset( (dx > s) ? s : dx, 0);
-			}
+			
+				if(destination < mRect.centerX()) {
+					mRect.offset( (dx > s) ? -s : -dx, 0);
+					slaveMover(s, dx, s, dx);
+					
+				}
+				else if(destination > mRect.centerX()) {
+					mRect.offset( (dx > s) ? s : dx, 0);
+					slaveMover(s, dx, -s, -dx);
+				}
+						
+			
+			
 		}
 		
+		public void slaveMover(int s, int dx, int ps, int pdx)
+		{ //The Slave mover is recursive so there can be infinite slave paddles and so the control can be 
+		  //reversed with each new slave paddle added.
+			if (this.getSlave() != null)
+			{
+				Paddle p = this.getSlave();
+				p.mRect.offset( (dx > s) ? ps : pdx, 0);
+				p.slaveMover(s, dx, -ps, -pdx);
+			}
+			
+		}
+		
+
 		public void setLives(int lives) {
 			mLives = Math.max(0, lives);
 		}
