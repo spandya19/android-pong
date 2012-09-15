@@ -5,6 +5,7 @@
     
 	<org.oep.pong.BokehView
 	 android:id="@+id/bokeh"
+	 	android:background="#00596c"
 		android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
     
