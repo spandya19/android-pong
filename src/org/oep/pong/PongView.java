@@ -5,7 +5,6 @@ import java.util.Random;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,21 +38,6 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	public static final int
 		STARTING_LIVES = 1,
 		PLAYER_PADDLE_SPEED = 10;
-	
-	
-	// BOKEH
-	
-	// quantity, maxSize, minSize, color, maxAlpha (0 - 255), minAlpha, maxBlur, minBlur, maxX, maxY   ffccad
-	BokehGenerator bg1 = new BokehGenerator(5, 70, 35, Color.parseColor("#fffdd4"), 170, 70, 10, 3, 400, 800);
-	BokehGenerator bg2 = new BokehGenerator(5, 70, 35, Color.parseColor("#ffad89"), 170, 70, 10, 5, 400, 800); // orangish done
-	BokehGenerator bg3 = new BokehGenerator(10, 70, 50, Color.parseColor("#5ed4b9"), 100, 30, 35, 30, 400, 800); // greenish done
-	BokehGenerator bg4 = new BokehGenerator(6, 70, 40, Color.parseColor("#ff4559"), 100, 70, 30, 25, 400, 800);	// red done
-	BokehGenerator bg5 = new BokehGenerator(15, 80, 60, Color.parseColor("#abf8e8"), 100, 90, 25, 20, 400, 800); // turquoise done
-	BokehGenerator bg6 = new BokehGenerator(1, 300, 250, Color.parseColor("#abf8e8"), 100, 90, 25, 20, 400, 800); // big turq
-	BokehGenerator bg7 = new BokehGenerator(1, 300, 250, Color.parseColor("#ff4559"), 100, 90, 25, 20, 400, 800); // big red
-	BokehGenerator bg8 = new BokehGenerator(1, 300, 250, Color.parseColor("#fffdd4"), 100, 90, 25, 20, 400, 800); // big yellow 
-	BokehGenerator bg9 = new BokehGenerator(1, 300, 250, Color.parseColor("#0bd4ff"), 100, 90, 25, 20, 400, 800); // big blue
-	
 	
 	/**
 	 * This is mostly deprecated but kept around if the need
@@ -537,26 +521,6 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         }
         
     	Context context = getContext();
-    	
-    	// Draw the Bokeh Background
-    	/*
-    	Paint bbPaint = new Paint();
-    	bbPaint.setStyle(Style.FILL);
-    	bbPaint.setColor(Color.YELLOW);
-    	bbPaint.setMaskFilter(new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL));
-    	bbPaint.setAlpha(40);
-    	BokehBall bb = new BokehBall(bbPaint, 100, 10, 10);
-    	bb.draw(canvas);
-    	*/
-    	bg9.draw(canvas);
-    	bg8.draw(canvas);
-    	bg7.draw(canvas);
-    	bg6.draw(canvas);
-    	bg5.draw(canvas);
-    	bg4.draw(canvas);
-    	bg3.draw(canvas);
-    	bg2.draw(canvas);
-    	bg1.draw(canvas);
     	
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);

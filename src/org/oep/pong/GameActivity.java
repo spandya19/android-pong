@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -37,7 +36,6 @@ public class GameActivity extends Activity {
         mPongView.setPlayerControl(b.getBoolean(EXTRA_RED_PLAYER, false),
         	b.getBoolean(EXTRA_BLUE_PLAYER, false)
         );
-        mPongView.setBackgroundColor(Color.parseColor("#00596c"));
         mPongView.update();
         
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
