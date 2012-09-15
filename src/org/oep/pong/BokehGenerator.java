@@ -6,7 +6,6 @@ import java.util.Random;
 
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 
 public class BokehGenerator {
