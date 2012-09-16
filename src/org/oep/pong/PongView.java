@@ -37,6 +37,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 
 	public static final int
 		STARTING_LIVES = 1,
+
 		PLAYER_PADDLE_SPEED = 50;
 
 	/**
@@ -61,6 +62,13 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 
 	/** CPU handicap */
 	private int mCpuHandicap;
+
+	
+/** Snow Object*/
+	
+	private Snowy mSnowy = null;
+
+	
 
 	/** Starts a new round when set to true */
 	private boolean mNewRound = true;
@@ -111,7 +119,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	 *
 	 */
 	class RefreshHandler extends Handler {
-		@Override
+		//@Override
 		public void handleMessage(Message msg) {
 			PongView.this.update();
 			PongView.this.invalidate(); // Mark the view as 'dirty'
@@ -163,7 +171,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	Context ctx = getContext();
     	Resources r = ctx.getResources();
     	
-    	mBallSpeedModifier = Math.max(0, prefs.getInt(Pong.PREF_BALL_SPEED, 0));
+    	mBallSpeedModifier = Math.max(13, prefs.getInt(Pong.PREF_BALL_SPEED, 0));
     	mMuted = prefs.getBoolean(Pong.PREF_MUTED, mMuted);
     	mLivesModifier = Math.max(0, prefs.getInt(Pong.PREF_LIVES, 4));
     	mCpuHandicap = Math.max(0, Math.min(PLAYER_PADDLE_SPEED-1, prefs.getInt(Pong.PREF_HANDICAP, 4)));
@@ -435,6 +443,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     private void initializePongView() {
     	initializePause();
     	initializePaddles();
+    	initializeSnowy();
     }
     
     private void initializePause() {
@@ -475,6 +484,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	mBall.pause();
     }
     
+    private void initializeSnowy() {
+    	mSnowy = new Snowy(getWidth(), getHeight());	
+    }
+
+    
+    
     protected float bound(float x, float low, float hi) {
     	return Math.max(low, Math.min(x, hi));
     }
@@ -513,6 +528,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
      * Paints the game!
      */
     @Override
+    
+    
+    
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         
@@ -525,6 +543,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);
     	mBlue.draw(canvas);
+    	mSnowy.draw(canvas);
+
 
     	// Draw touchboxes if needed
     	if(gameRunning() && mRed.player && mCurrentState == State.Running)
@@ -536,7 +556,6 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
         mPaint.setColor(Color.YELLOW);
-        
         mBall.draw(canvas);
         
         // If either is a not a player, blink and let them know they can join in!
@@ -573,8 +592,11 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         	String s = context.getString(R.string.paused);
         	int width = (int) mPaint.measureText(s);
         	int height = (int) (mPaint.ascent() + mPaint.descent()); 
-        	mPaint.setColor(Color.GREEN);
+
+        	mPaint.setColor(Color.WHITE);
         	canvas.drawText(s, getWidth() / 2 - width / 2, getHeight() / 3 - height / 2, mPaint);
+
+        	
         }
         
         // Draw a 'lives' counter
@@ -596,18 +618,16 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Announce the winner!
         if(!gameRunning()) {
-        	mPaint.setColor(Color.GREEN);
+        	mPaint.setColor(Color.WHITE);
         	String s = "You both lose";
         	
         	if(!mBlue.living()) {
         		s = context.getString(R.string.red_wins);
         		mPaint.setColor(Color.MAGENTA);
-        		mPaint.setTextSize(36);
         	}
         	else if(!mRed.living()) {
         		s = context.getString(R.string.blue_wins);
         		mPaint.setColor(Color.CYAN);
-        		mPaint.setTextSize(36);
         	}
         	
         	int width = (int) mPaint.measureText(s);
@@ -974,10 +994,73 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 
 		public static final double BOUND = Math.PI / 9;
+
 		public static final float SPEED = 10.0f; 
 		public static final int RADIUS = 7;
+
 		public static final double SALT = 4 * Math.PI / 9;
 	}
+	
+	class Snowy {
+		private int width = 0;
+		private int height = 0;
+		private int nSnow = 500;
+		private int maxSpeed = 2;
+		private Snow[] snowArray = new Snow[nSnow];
+		private Random r = new Random(); 
+		
+		
+		public class Snow {
+			public int x = 0;
+			public int y = 0;
+			public int radius = 0;
+			public int speed = 0;
+			public int color = 0;
+		}
+
+		public Snowy(int w, int h) {
+			height = h;
+			width = w;
+			for (int i=0; i<nSnow; i++) {
+				resetSnow(snowArray[i] = new Snow());
+				snowArray[i].y = r.nextInt(height);
+			}
+		}
+
+		/* Reset the Snow flakes*/
+
+		private void resetSnow(Snow snow) {	
+			snow.y = 0;
+			snow.x = r.nextInt(width);
+			snow.speed = r.nextInt(maxSpeed)*2;
+			snow.radius = 2;
+			snow.color= Color.WHITE ;
+			}
+		
+		/* Moves the Snow Flakes*/
+
+		private void moveSnow(Snow snow) {
+			snow.y = snow.y + snow.speed * 2;
+			if (snow.y > height) resetSnow(snow);
+		}
+		
+		/*Draws the Snow Flakes*/
+		public void draw(Canvas canvas) {
+			for (int i=0; i<nSnow; i++) {
+				moveSnow(snowArray[i]);
+				mPaint.setColor(snowArray[i].color);
+				canvas.drawPoint(snowArray[i].x, snowArray[i].y, mPaint);
+			}
+		}
+	}
+
+	
+	
+	
+	
+	
+	
+	
 
 	class Paddle {
 		protected int mColor;
@@ -1108,12 +1191,15 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		public boolean collides(Ball b) {
 			return b.x >= mRect.left && b.x <= mRect.right && 
 			b.y >= mRect.top - Ball.RADIUS && b.y <= mRect.bottom + Ball.RADIUS;
+			
 		}
 
 		/** Thickness of the paddle */
 		private static final int PADDLE_THICKNESS = 50;
 
+
 		/** Width of the paddle */
 		private static final int PADDLE_WIDTH = 50;
 	}
 }
+
