@@ -71,14 +71,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	/** Mutes sounds when true */
 	private boolean mMuted = false;
-<<<<<<< HEAD
 
 	private Paddle mRed, mBlue,mMagenta;
-=======
 	
-	
-	private Paddle mRed, mBlue;
->>>>>>> otherrepo/master
 	
 	/** Touch boxes for various functions. These are assigned in initialize() */
 	private Rect mPauseTouchBox;
