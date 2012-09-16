@@ -17,3 +17,5 @@ local.properties
 .classpath
 .project
 project.properties
+
+res/values/strings.xml~
