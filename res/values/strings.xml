@@ -10,9 +10,11 @@
     <string name="preferences">Preferences</string>
     
     <string name="new_game">New game</string>
-    <string name="red_wins">A winner is Red!</string>
-    <string name="blue_wins">A winner is Blue!</string>
+    <string name="red_wins">Magneta win!</string>
+    <string name="blue_wins">Cyan win!</string>
+
     
     <string name="join_in">Touch to join in!</string>
 	<string name="pause">Pause</string>
 </resources>
+
