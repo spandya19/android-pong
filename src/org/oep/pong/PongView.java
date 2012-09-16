@@ -52,6 +52,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	/** Preferences loaded at startup */
 	private int mBallSpeedModifier;
+	private int totalHits =0;
 	
 	/** Lives modifier */
 	private int mLivesModifier;
@@ -71,7 +72,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** Mutes sounds when true */
 	private boolean mMuted = false;
 
-	private Paddle mRed, mBlue;
+	private Paddle mRed, mBlue,mMagenta;
 	
 	/** Touch boxes for various functions. These are assigned in initialize() */
 	private Rect mPauseTouchBox;
@@ -257,6 +258,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	protected void handleBounces(float px, float py) {
 		handleTopFastBounce(mRed, px, py);
+		handleMiddleFastBounce(mMagenta,px,py);
 		handleBottomFastBounce(mBlue, px, py);
 		
 		// Handle bouncing off of a wall
@@ -292,6 +294,19 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			increaseDifficulty();
 		}
 	}
+	
+	protected void handleMiddleFastBounce(Paddle paddle, float px, float py)
+	{
+		if (mBall.goingUp() == true )
+		{
+			handleTopFastBounce(paddle,px,py);
+		}
+		else if ( mBall.goingDown() == true  )
+		{
+			handleBottomFastBounce(paddle, px, py);
+		}
+	}
+
 	
 	protected void handleBottomFastBounce(Paddle paddle, float px, float py) {
 		if(mBall.goingDown() == false) return;
@@ -409,7 +424,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	 * Knocks up the framerate a bit to keep it difficult.
 	 */
 	private void increaseDifficulty() {
-		mBall.speed++;
+		aiPrediction(mMagenta, mBlue);
+		totalHits++;
+		if (totalHits > 5)
+		{
+			mBall.speed = mBall.speed+ mBall.speed + 2;
+			
+		}
+
 	}
 
 	/**
@@ -449,15 +471,19 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     private void initializePaddles() {
     	Rect redTouch = new Rect(0,0,getWidth(),getHeight() / 8);
     	Rect blueTouch = new Rect(0, 7 * getHeight() / 8, getWidth(), getHeight());
-    	
+    	Rect magentaTouch = new Rect(0, 7* getHeight() / 5, getWidth(), getHeight());
+
     	mRed = new Paddle(Color.RED, redTouch.bottom + PADDING);
     	mBlue = new Paddle(Color.BLUE, blueTouch.top - PADDING - Paddle.PADDLE_THICKNESS);
+    	mMagenta = new Paddle(Color.MAGENTA, magentaTouch.top /PADDING + 10 );
     	
     	mRed.setTouchbox( redTouch );
     	mBlue.setTouchbox( blueTouch );
+    	mMagenta.setTouchbox(magentaTouch);
     	
     	mRed.setHandicap(mCpuHandicap);
     	mBlue.setHandicap(mCpuHandicap);
+    	mMagenta.setHandicap(mCpuHandicap);
     	
     	mRed.player = mRedPlayer;
     	mBlue.player = mBluePlayer;
@@ -527,6 +553,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);
     	mBlue.draw(canvas);
+    	mMagenta.draw(canvas);
 
     	// Draw touchboxes if needed
     	if(gameRunning() && mRed.player && mCurrentState == State.Running)
@@ -1126,6 +1153,6 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		private static final int PADDLE_THICKNESS = 10;
 		
 		/** Width of the paddle */
-		private static final int PADDLE_WIDTH = 40;
+		private static final int PADDLE_WIDTH = 60 ;
 	}
 }
